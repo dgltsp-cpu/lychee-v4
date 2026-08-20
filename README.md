@@ -40,7 +40,22 @@ docker compose up -d
 
 ### VPS 拉取部署（需已装 Docker + Compose）
 
-方式一：HTTPS（VPS 上用带 repo 权限的 GitHub 个人访问令牌代替密码）
+**推荐：直接拉预构建镜像（免源码构建）**，本仓库已在 GHCR 发布镜像：
+
+```bash
+docker pull ghcr.io/dgltsp-cpu/lychee-v4:4.13.0   # 私有包需先 docker login ghcr.io
+```
+
+克隆仓库（compose 已默认指向镜像）：
+
+```bash
+git clone https://github.com/dgltsp-cpu/lychee-v4.git
+cd lychee-v4
+cp .env.example .env
+docker compose up -d       # 直接拉取运行，无需 --build
+```
+
+方式一（备选）：HTTPS 源码构建（VPS 上用带 repo 权限的 GitHub 个人访问令牌代替密码）
 
 ```bash
 git clone https://github.com/dgltsp-cpu/lychee-v4.git
