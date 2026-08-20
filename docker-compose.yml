@@ -1,0 +1,21 @@
+services:
+  lychee:
+    build:
+      context: .
+    image: lychee-v4:4.13.0
+    container_name: lychee-v4
+    restart: unless-stopped
+    ports:
+      - "8001:80"
+    environment:
+      LYCHEE_ADMIN_USER: "${LYCHEE_ADMIN_USER:-admin}"
+      LYCHEE_ADMIN_PASSWORD: "${LYCHEE_ADMIN_PASSWORD:-admin1234}"
+    volumes:
+      - lychee_v4_uploads:/app/public/uploads
+      - lychee_v4_storage:/app/storage
+      - lychee_v4_db:/app/database/sqlite
+
+volumes:
+  lychee_v4_uploads:
+  lychee_v4_storage:
+  lychee_v4_db:
