@@ -1,22 +1,20 @@
 services:
   lychee:
-    # VPS 直接拉取预构建镜像（推荐）；想从源码构建时取消下面 build 注释
-    image: ghcr.io/dgltsp-cpu/lychee-v4:4.13.0
-    # build:
-    #   context: .
+    image: ghcr.io/dgltsp-cpu/lychee-v4:v4.12.0-nobrand
     container_name: lychee-v4
-    restart: unless-stopped
+    restart: always
     ports:
-      - "8001:80"
+      - "${LYCHEE_PORT:-8082}:80"
     environment:
-      LYCHEE_ADMIN_USER: "${LYCHEE_ADMIN_USER:-admin}"
-      LYCHEE_ADMIN_PASSWORD: "${LYCHEE_ADMIN_PASSWORD:-admin1234}"
+      - PUID=1000
+      - PGID=1000
+      - DB_CONNECTION=sqlite
+      - ADMIN_USER=${ADMIN_USER:-admin}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD:-admin123}
     volumes:
-      - lychee_v4_uploads:/app/public/uploads
-      - lychee_v4_storage:/app/storage
-      - lychee_v4_db:/app/database/sqlite
+      - lychee_conf:/conf
+      - lychee_uploads:/uploads
 
 volumes:
-  lychee_v4_uploads:
-  lychee_v4_storage:
-  lychee_v4_db:
+  lychee_conf:
+  lychee_uploads:
