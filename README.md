@@ -1,14 +1,26 @@
 # Lychee v4.12.0 定制镜像（去品牌版）
 
-基于 Lychee v4.12.0 官方镜像定制，已内置以下修改（无需额外挂载任何 JS/CSS 文件）：
+基于 Lychee v4.12.0 官方镜像定制，所有修改已内置到镜像中（无需额外挂载任何 JS/CSS 文件），VPS 一条命令直接拉取运行。
 
-- 登录页：隐藏登录框上方的 Lychee 品牌与版本文字
-- 相册底部：隐藏「Powered by Lychee」与「本网站上的所有图片」等品牌/版权文字
-- 相册工具栏：新增「设置封面」按钮，可直接从网站全部照片中挑选一张设为相册封面（无需先把照片放进相册）
+镜像：`ghcr.io/dgltsp-cpu/lychee-v4:v4.12.0-nobrand`（公开，支持 amd64 + arm64）
 
-镜像已打包上传到 GitHub Container Registry（公开，amd64 + arm64），VPS 无需构建源码，一条命令直接拉取运行。
+## 已内置的定制内容
 
-镜像：`ghcr.io/dgltsp-cpu/lychee-v4:v4.12.0-nobrand`
+1. **登录框去品牌**：隐藏登录框上方的 Lychee 品牌与版本文字
+2. **页脚去品牌**：隐藏「Powered by Lychee」与「本网站上的所有图片」等品牌/版权文字
+3. **相册自定义封面**：相册工具栏新增「设置封面」按钮，可从网站全部照片中任选一张设为相册封面（无需先把照片放进相册）
+4. **游客隐藏登录图标**：未登录时左上角不再显示登录图标，登录统一走固定网址（见下）
+5. **游客隐藏管理按钮**：未登录进入相册时，右上角「设置封面」「关于相册」按钮自动隐藏；登录后恢复正常
+6. **固定登录网址**：访问 `http://你的地址:8082/gallery#login` 直接弹出登录框（无论当前是否已登录），登录后地址栏自动清除 `#login`
+7. **缓存刷新**：前端 JS 引用带版本号参数，更新镜像后无需手动清浏览器缓存
+
+> 游客模式下仍保留：公开相册浏览、分享、下载、搜索、地图等功能，界面更干净。
+
+## 定制源码（本仓库）
+
+- `dist/frontend.html` / `dist/frontend.js` / `dist/cover-custom.js`：前端定制文件（已打包进镜像）
+- `views/frontend.blade.php`：页面模板（JS 版本号参数，已打包进镜像）
+- `Dockerfile`：镜像构建文件（`FROM lycheeorg/lychee:v4.12.0` + 覆盖以上文件）
 
 ## 在 VPS 上安装（逐条执行）
 
@@ -38,10 +50,11 @@ docker compose up -d
 ```bash
 docker compose ps
 ```
-看到 `lychee-v4` 状态为 `Up` 即成功。
+看到 `lychee` 状态为 `Up` 即成功。
 
 **步骤 6：访问**
-浏览器打开 `http://VPS_IP:8082`，使用步骤 3 设置的用户名 `admin` 和密码登录。
+- 游客浏览相册：`http://VPS_IP:8082`
+- 管理员登录：`http://VPS_IP:8082/gallery#login`（用户名 `admin`，密码为步骤 3 设置的值）
 
 > 如果 8082 端口被占用，编辑 `.env` 里的 `LYCHEE_PORT` 换成其他端口，再执行 `docker compose up -d`。
 > 第一次启动后如需改密码，直接在 Lychee 界面「设置 → 账号」里修改即可。
@@ -58,7 +71,7 @@ docker compose down
 # 重新启动
 docker compose up -d
 
-# 升级（先 git pull 拉取新配置，再重建容器）
+# 升级（先 git pull 拉取新配置，再强制拉取新镜像重建）
 git pull
 docker compose up -d --pull always
 ```
